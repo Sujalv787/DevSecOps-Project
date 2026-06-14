@@ -1,8 +1,12 @@
 frontend/node_modules
 frontend/.env.local
+frontend/.env.docker
 backend/.env
+backend/.env.docker
 backend/node_modules
 /node_modules
 coverage/
+**/coverage/
 .idea/
+.vscode/
 package-lock.json

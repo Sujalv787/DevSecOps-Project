@@ -1,0 +1,32 @@
+# ─── Dependencies ────────────────────────────────────────────
+node_modules
+npm-debug.log*
+
+# ─── Build output ─────────────────────────────────────────────
+dist/
+build/
+
+# ─── Test & Coverage ──────────────────────────────────────────
+coverage/
+*.lcov
+
+# ─── Environment / Secrets ───────────────────────────────────
+.env
+.env.*
+!.env.sample
+!.env.docker
+
+# ─── Dev tooling / IDE ───────────────────────────────────────
+.git
+.gitignore
+.eslintrc*
+eslint.config.js
+.prettierrc
+.prettierignore
+.babelrc
+.idea
+.vscode
+
+# ─── Hosting config ──────────────────────────────────────────
+vercel.json
+.github

@@ -1,0 +1,23 @@
+# ─── Node modules (each service has its own) ─────────────────
+**/node_modules
+
+# ─── Secrets ─────────────────────────────────────────────────
+**/.env
+**/.env.*
+!**/.env.sample
+!**/.env.docker
+
+# ─── Test & Coverage ─────────────────────────────────────────
+**/coverage
+**/.nyc_output
+**/*.lcov
+
+# ─── Git & IDE ───────────────────────────────────────────────
+.git
+.gitignore
+.idea
+.vscode
+
+# ─── CI / hosting config ─────────────────────────────────────
+.github
+**/vercel.json

@@ -1,0 +1,114 @@
+# =============================================================
+# Wanderlust — Docker Compose
+# Services: mongodb | redis | backend | frontend
+#
+# Usage:
+#   1. cp backend/.env.docker backend/.env.docker   (already there)
+#   2. Edit backend/.env.docker — set JWT_SECRET etc.
+#   3. docker compose up --build
+#
+# Frontend:  http://localhost:5173
+# Backend:   http://localhost:8080
+# =============================================================
+
+name: wanderlust
+
+services:
+
+  # ── MongoDB ─────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7-jammy
+    container_name: wanderlust-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: wanderlust
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"           # expose for local Compass access (optional)
+    networks:
+      - wanderlust-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # ── Redis ────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: wanderlust-redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"             # expose for local inspection (optional)
+    networks:
+      - wanderlust-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Backend (Node / Express) ─────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: runtime             # use the lean runtime stage
+    container_name: wanderlust-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.docker     # inject secrets at runtime, not baked in
+    ports:
+      - "8080:8080"
+    networks:
+      - wanderlust-net
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ── Frontend (React / Vite dev server) ───────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile      # created below
+    container_name: wanderlust-frontend
+    restart: unless-stopped
+    environment:
+      - VITE_API_PATH=http://localhost:8080
+    ports:
+      - "5173:5173"
+    networks:
+      - wanderlust-net
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      # Hot-reload: mount source so Vite picks up changes
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+
+# ── Named Volumes ────────────────────────────────────────────
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ── Internal Network ─────────────────────────────────────────
+networks:
+  wanderlust-net:
+    driver: bridge
