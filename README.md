@@ -141,10 +141,7 @@ pipeline {
 <hr>
 
 <!-- Support -->
-<div style="padding: 10px; margin-bottom: 20px;">
-  <h2><img src="https://github.com/Meetjain1/wanderlust/assets/133582566/af38ec84-7387-4af7-af85-8f408a4654e9" width="30" height="30" style="vertical-align: middle;"> Show Your Support</h2>
-  <p>If you find this project interesting and inspiring, please consider showing your support by starring it on GitHub! Your star goes a long way in helping us reach more developers and encourages us to keep enhancing the project.</p>
-</div>
+
 
 <hr>
 
