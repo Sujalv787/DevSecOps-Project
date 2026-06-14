@@ -1,6 +1,7 @@
 # ============================================================
 # Stage 1 — Builder
-# Install ALL deps (including devDeps), run tests, prune after
+# Install ALL deps, prune devDeps after build
+# (Tests run in Jenkins pipeline, not during Docker build)
 # ============================================================
 FROM node:21-alpine AS builder
 
@@ -19,8 +20,8 @@ RUN npm install
 # Copy the rest of the source
 COPY . .
 
-# Run tests in CI mode (--watchAll=false so it exits after one run)
-RUN CI=true npm test -- --watchAll=false --passWithNoTests
+# Tests are handled by the Jenkins pipeline (Install Dependencies stage)
+# RUN CI=true npm test -- --watchAll=false --passWithNoTests
 
 # Prune dev dependencies to get a clean prod-only node_modules
 RUN npm prune --omit=dev
