@@ -12,8 +12,8 @@ WORKDIR /app
 COPY package.json ./
 
 # Install all dependencies (dev needed for Vite)
-# Note: no package-lock.json in repo (.gitignore'd), so we use npm install
-RUN npm install
+# --ignore-scripts skips lifecycle hooks like 'prepare' (husky) that fail in Docker
+RUN npm install --ignore-scripts
 
 # Copy source (will be overridden by volume mount in compose)
 COPY . .
